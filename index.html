@@ -156,13 +156,17 @@ function view(p){
  $("#code").innerHTML=lines.slice(0,500).map(l=>`<div class="${l[1]?"h":""}">${hl(l[0])||" "}</div>`).join("")}
 
 async function download(){
- const rm=[...document.querySelectorAll("#fl input:checked")].map(i=>i.dataset.p);
- const z=await JSZip.loadAsync(buf);rm.forEach(p=>z.remove(p));
- Object.keys(z.files).filter(p=>/^META-INF\/[^/]+\.(SF|RSA|DSA|EC)$/i.test(p)).forEach(p=>z.remove(p));
- const blob=await z.generateAsync({type:"blob",compression:"DEFLATE"});
- const dls=window.claude?await window.claude.use("downloads"):null;
- if(!dls){alert("Downloads aren’t available in this view. Open the page in claude.ai in a browser.");return}
- try{await dls.save({filename:fname.replace(/\.jar$/i,"")+"-boldy-safe.jar.zip",data:blob})}catch(e){if(!e||e.code!=="declined")alert("Couldn’t save the file ("+((e&&e.code)||"error")+").")}}
+  const rm=[...document.querySelectorAll("#fl input:checked")].map(i=>i.dataset.p);
+  const z=await JSZip.loadAsync(buf);rm.forEach(p=>z.remove(p));
+  Object.keys(z.files).filter(p=>/^META-INF\/[^\/]+\.(SF|RSA|DSA|EC)$/i.test(p)).forEach(p=>z.remove(p));
+  const blob=await z.generateAsync({type:"blob",compression:"DEFLATE"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=url;
+  a.download=fname.replace(/\.jar$/i,"")+"-boldy-safe.jar";
+  document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
+}
+
 
 const drop=$("#drop"),inp=$("#file");
 drop.onclick=()=>inp.click();inp.onchange=()=>inp.files[0]&&scan(inp.files[0]);
