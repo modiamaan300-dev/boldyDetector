@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Boldy Protector — JAR Scanner</title>
+<style>
+:root{--bg:#04070b;--panel:#0b121a;--line:#1a2633;--tx:#e6f0f7;--mut:#7d90a0;--g:#00e060;--b:#0a84ff;--r:#ff4d5e;--y:#ffc233;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;min-height:100vh;background-image:radial-gradient(600px 300px at 20% -5%,#00e06022,transparent),radial-gradient(600px 300px at 85% -5%,#0a84ff22,transparent)}
+.wrap{max-width:1000px;margin:0 auto;padding:28px 18px 60px}
+header{text-align:center;padding:10px 0 26px}
+header svg{width:96px;filter:drop-shadow(0 0 22px #0a84ff55)}
+h1{margin:10px 0 4px;font-size:clamp(30px,6vw,48px);letter-spacing:-1px;background:linear-gradient(90deg,var(--g),var(--b));-webkit-background-clip:text;background-clip:text;color:transparent}
+.sub{color:var(--mut);max-width:560px;margin:0 auto}
+.drop{border:2px dashed #2a3b4d;border-radius:18px;padding:46px 20px;text-align:center;background:var(--panel);cursor:pointer;transition:.2s}
+.drop:hover,.drop.on{border-color:var(--g);box-shadow:0 0 40px #00e06026,inset 0 0 40px #0a84ff14}
+.drop b{font-size:20px;display:block;margin-bottom:6px}.drop span{color:var(--mut)}
+.pill{display:inline-block;margin-top:14px;font-size:12px;color:var(--g);border:1px solid #00e06055;border-radius:99px;padding:3px 12px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px;margin-top:18px}
+.hide{display:none}
+.bar{height:6px;background:#122030;border-radius:9px;overflow:hidden}.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--g),var(--b));transition:width .15s}
+.scanmsg{font:13px ui-monospace,Menlo,Consolas,monospace;color:var(--mut);margin-top:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.verdict{display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+.ring{width:96px;height:96px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:22px;flex:none}
+.verdict h2{margin:0;font-size:24px}.verdict p{margin:2px 0 0;color:var(--mut)}
+.stats{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}.stat{background:#0e1823;border:1px solid var(--line);border-radius:10px;padding:6px 12px;font-size:13px;color:var(--mut)}.stat b{color:var(--tx)}
+.tag{font-size:11px;font-weight:700;border-radius:6px;padding:2px 7px;text-transform:uppercase;flex:none}
+.critical{background:#ff4d5e22;color:var(--r)}.high{background:#ff4d5e22;color:var(--r)}.medium{background:#ffc23322;color:var(--y)}.low,.clean{background:#00e06020;color:var(--g)}
+.fl{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-top:1px solid var(--line)}.fl:first-child{border-top:0}
+.fl input{margin-top:5px;accent-color:var(--g);width:17px;height:17px;flex:none}
+.fl .p{font:13px ui-monospace,Menlo,Consolas,monospace;word-break:break-all;cursor:pointer}.fl .p:hover{color:var(--b)}
+.fl small{display:block;color:var(--mut);font-size:12.5px}
+.btn{border:0;border-radius:12px;padding:13px 22px;font-weight:700;font-size:15px;cursor:pointer;color:#02130a;background:linear-gradient(90deg,var(--g),#00c8a0);box-shadow:0 0 28px #00e06040}
+.btn.alt{background:#122030;color:var(--tx);box-shadow:none;border:1px solid var(--line)}.btn:disabled{opacity:.4;cursor:not-allowed}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.cols{display:grid;grid-template-columns:260px 1fr;gap:14px}
+@media(max-width:700px){.cols{grid-template-columns:1fr}}
+.tree{max-height:420px;overflow:auto;font:12px ui-monospace,Menlo,Consolas,monospace}
+.tree div{padding:3px 8px;border-radius:6px;cursor:pointer;word-break:break-all;display:flex;gap:6px}.tree div:hover{background:#12202e}.tree div.sel{background:#0a84ff26}
+.tree .d{width:8px;height:8px;border-radius:50%;margin-top:4px;flex:none;background:#25384a}
+.code{background:#02050a;border:1px solid var(--line);border-radius:10px;max-height:420px;overflow:auto;font:12px/1.55 ui-monospace,Menlo,Consolas,monospace;padding:10px 0;margin:0}
+.code div{padding:0 12px;white-space:pre-wrap;word-break:break-all}.code .h{background:#ff4d5e14;color:var(--tx);border-left:3px solid var(--r)}.code .w{color:#ff2d44;font-weight:800;text-shadow:0 0 8px #ff2d4499;background:#ff2d4426;border-radius:3px;padding:0 2px}.code .c{color:#5a7a90}
+h3{margin:0 0 10px;font-size:16px}
+.note{font-size:12.5px;color:var(--mut);margin-top:12px}
+footer{text-align:center;color:var(--mut);font-size:12.5px;margin-top:30px}
+</style></head><body><div class="wrap">
+<header>
+<svg viewBox="0 0 441 405" xmlns="http://www.w3.org/2000/svg" aria-label="Boldy Protector logo"><defs><linearGradient id="gs" x1="0" x2="1"><stop offset=".5" stop-color="#00c853"/><stop offset=".5" stop-color="#0a78d7"/></linearGradient></defs>
+<path d="M219 12L68 56v140c0 90 70 160 151 192 81-32 151-102 151-192V56z" fill="#10181f" stroke="url(#gs)" stroke-width="9"/>
+<rect x="123" y="74" width="190" height="52" fill="#d9b800"/><rect x="123" y="126" width="190" height="22" fill="#b39500"/>
+<rect x="123" y="74" width="22" height="26" fill="#00c853"/><rect x="170" y="74" width="22" height="26" fill="#00c853"/><rect x="218" y="74" width="24" height="26" fill="#0050a8"/><rect x="265" y="74" width="26" height="26" fill="#0050a8"/>
+<rect x="123" y="148" width="95" height="121" fill="#00c853"/><rect x="145" y="148" width="47" height="98" fill="#00e060"/><rect x="218" y="148" width="95" height="121" fill="#0078d7"/><rect x="242" y="148" width="50" height="98" fill="#0a84ff"/><rect x="218" y="148" width="24" height="121" fill="#0050a8"/><rect x="292" y="148" width="21" height="121" fill="#0050a8"/>
+<rect x="170" y="174" width="22" height="22" fill="#000"/><rect x="242" y="174" width="22" height="22" fill="#000"/><rect x="145" y="222" width="24" height="47" fill="#000"/><rect x="145" y="246" width="146" height="23" fill="#000"/><rect x="266" y="222" width="25" height="47" fill="#000"/></svg>
+<h1>Boldy Protector</h1>
+<p class="sub">Drop in a .jar mod. Boldy inspects every class right in your browser, shows you the code, strips the malware and hands you back a safe copy.</p>
+</header>
+
+<div id="drop" class="drop"><b>Drop your .jar file here</b><span>or click to browse</span><br><div class="pill">🔒 100% local — your file never leaves your device</div>
+<input id="file" type="file" accept=".jar,.zip" class="hide"></div>
+
+<div id="scan" class="card hide"><h3 id="scanTitle">Scanning…</h3><div class="bar"><i id="pb"></i></div><div class="scanmsg" id="sm"></div></div>
+
+<div id="res" class="hide">
+ <div class="card"><div class="verdict"><div class="ring" id="ring"></div><div><h2 id="vt"></h2><p id="vd"></p></div></div><div class="stats" id="stats"></div></div>
+ <div class="card" id="fcard"><h3>Detections — tick what to remove</h3><div id="fl"></div>
+  <div class="row"><button class="btn" id="dl">⬇ Download safe version</button><button class="btn alt" id="again">Scan another file</button></div>
+  <p class="note">Boldy uses heuristics (suspicious API calls, credential-theft paths, known malicious hosts, embedded executables). Removing a flagged class can break the mod, and no scanner catches everything. Only download mods from Modrinth or CurseForge, and keep the original away from your game. The safe copy is saved as <b>.jar.zip</b> — delete the “.zip” at the end of the name and it’s your .jar again.</p></div>
+ <div class="card"><h3>Code inspector</h3><div class="cols"><div class="tree" id="tree"></div><pre class="code" id="code"><div class="c">// pick a file on the left</div></pre></div></div>
+</div>
+<footer>Boldy Protector · built to keep modded Minecraft safe</footer>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script>
+const $=s=>document.querySelector(s),esc=s=>String(s).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+const RULES=[
+[/discord(app)?\.com\/api\/webhooks/i,100,"Discord webhook (data exfiltration)"],
+[/85\.217\.144\.130|pastebin\.com\/raw|ngrok|api\.telegram\.org\/bot|fractureiser/i,60,"Known malicious infrastructure"],
+[/Login Data|Local State|logins\.json|key4\.db|cookies\.sqlite|Web Data/,60,"Browser credential files"],
+[/launcher_(profiles|accounts)\.json|accounts\.json|accessToken/,40,"Minecraft account tokens"],
+[/powershell|cmd\.exe|-EncodedCommand|\/bin\/(ba)?sh/i,40,"Shell / PowerShell command"],
+[/CurrentVersion\\Run|\/etc\/cron|systemd|\.config\/autostart|Startup/i,40,"Persistence mechanism"],
+[/^defineClass$/,30,"Dynamic class loading"],
+[/^java\/net\/URLClassLoader$/,25,"Remote class loading"],
+[/^java\/lang\/ProcessBuilder$/,25,"Spawns OS processes"],
+[/api\.ipify\.org|checkip|ip-api\.com/i,20,"IP lookup"],
+[/^java\/util\/Base64\$Decoder$/,10,"Base64 decoding"],
+[/^java\/net\/(HttpURLConnection|URL)$/,10,"Network access"]];
+const sev=s=>s>=60?"critical":s>=30?"high":s>=15?"medium":s>0?"low":"clean";
+let buf,fname,items=[],zipObj;
+
+function parseClass(u8){
+ const dv=new DataView(u8.buffer,u8.byteOffset,u8.byteLength);
+ if(u8.length<12||dv.getUint32(0)!==0xCAFEBABE)return null;
+ const n=dv.getUint16(8),cp=[null],dec=new TextDecoder();let p=10;
+ for(let i=1;i<n;i++){const t=dv.getUint8(p++);
+  if(t==1){const l=dv.getUint16(p);p+=2;cp[i]={t,s:dec.decode(u8.subarray(p,p+l))};p+=l}
+  else if([7,8,16,19,20].includes(t)){cp[i]={t,a:dv.getUint16(p)};p+=2}
+  else if(t==3||t==4)p+=4;
+  else if(t==5||t==6){p+=8;i++}
+  else if([9,10,11,12,17,18].includes(t)){cp[i]={t,a:dv.getUint16(p),b:dv.getUint16(p+2)};p+=4}
+  else if(t==15)p+=3;else return null}
+ const u=i=>cp[i]&&cp[i].s,cn=i=>cp[i]&&u(cp[i].a);
+ const name=cn(dv.getUint16(p+2))||"?",sup=cn(dv.getUint16(p+4))||"?";
+ const methods=[],strings=[],all=[];
+ cp.forEach(e=>{if(!e)return;if(e.t==1)all.push(e.s);
+  if(e.t==8)strings.push(u(e.a));
+  if(e.t==10||e.t==11){const nt=cp[e.b];methods.push(cn(e.a)+"."+u(nt.a)+u(nt.b))}});
+ return{name,sup,methods:[...new Set(methods)],strings:[...new Set(strings)],all}}
+
+function analyse(texts){const hits=[];let score=0;
+ for(const[re,w,label]of RULES){const m=texts.find(s=>re.test(s));if(m){hits.push({label,w,sample:m.slice(0,90)});score+=w}}
+ return{hits,score}}
+
+async function scan(file){
+ fname=file.name;buf=await file.arrayBuffer();
+ $("#drop").classList.add("hide");$("#res").classList.add("hide");$("#scan").classList.remove("hide");
+ try{zipObj=await JSZip.loadAsync(buf)}catch(e){$("#scanTitle").textContent="That doesn’t look like a valid .jar file.";return}
+ const paths=Object.keys(zipObj.files).filter(p=>!zipObj.files[p].dir);items=[];
+ for(let i=0;i<paths.length;i++){const p=paths[i],f=zipObj.files[p];
+  $("#pb").style.width=((i+1)/paths.length*100)+"%";$("#sm").textContent="› "+p;
+  const u8=await f.async("uint8array");let it={path:p,size:u8.length,hits:[],score:0,kind:"data"};
+  if(/\.class$/.test(p)){const c=parseClass(u8);it.kind="class";it.cls=c;if(c){const r=analyse(c.all);it.hits=r.hits;it.score=r.score}}
+  else if(/\.(exe|dll|bat|cmd|ps1|vbs|sh|scr|msi|so|dylib)$/i.test(p)){it.kind="bin";it.hits=[{label:"Embedded executable / script",w:80,sample:p}];it.score=80}
+  else if(/\.jar$/i.test(p)&&!/^META-INF\/jars\//.test(p)){it.kind="bin";it.hits=[{label:"Hidden nested JAR",w:35,sample:p}];it.score=35}
+  else if(u8.length<1e6&&/\.(json|toml|txt|cfg|properties|mf|mcmeta|yml|yaml|xml)$/i.test(p)){it.kind="text";it.text=new TextDecoder().decode(u8);const r=analyse(it.text.split("\n"));it.hits=r.hits;it.score=r.score}
+  items.push(it);if(i%8==0)await new Promise(r=>setTimeout(r,12))}
+ show()}
+
+function show(){
+ $("#scan").classList.add("hide");$("#res").classList.remove("hide");
+ const bad=items.filter(i=>i.score>=15).sort((a,b)=>b.score-a.score),top=Math.max(0,...items.map(i=>i.score)),s=sev(top);
+ const col={critical:"var(--r)",high:"var(--r)",medium:"var(--y)",low:"var(--g)",clean:"var(--g)"}[s];
+ $("#ring").style.cssText=`background:conic-gradient(${col} ${Math.min(100,top)}%,#122030 0);box-shadow:0 0 30px ${col}44`;
+ $("#ring").innerHTML=`<span style="background:var(--panel);width:74px;height:74px;border-radius:50%;display:grid;place-items:center;color:${col}">${Math.min(100,top)}</span>`;
+ $("#vt").textContent={critical:"Malware detected",high:"Highly suspicious",medium:"Some suspicious behaviour",low:"Looks clean",clean:"Looks clean"}[s];
+ $("#vt").style.color=col;
+ $("#vd").textContent=fname+(bad.length?` — ${bad.length} flagged file(s)`:" — nothing dangerous found");
+ $("#stats").innerHTML=[["Files",items.length],["Classes",items.filter(i=>i.kind=="class").length],["Flagged",bad.length],["Size",(buf.byteLength/1024).toFixed(0)+" KB"]].map(x=>`<div class="stat">${x[0]}: <b>${x[1]}</b></div>`).join("");
+ $("#fcard").classList.toggle("hide",!bad.length);
+ $("#fl").innerHTML=bad.map(i=>`<div class="fl"><input type="checkbox" data-p="${esc(i.path)}" ${i.score>=30?"checked":""}><div><span class="tag ${sev(i.score)}">${sev(i.score)}</span> <span class="p" data-v="${esc(i.path)}">${esc(i.path)}</span><small>${i.hits.map(h=>esc(h.label)).join(" · ")}</small></div></div>`).join("");
+ $("#tree").innerHTML=items.map(i=>`<div data-v="${esc(i.path)}"><span class="d" style="${i.score>=15?"background:"+({critical:"var(--r)",high:"var(--r)",medium:"var(--y)"}[sev(i.score)]||"var(--y)"):""}"></span>${esc(i.path)}</div>`).join("");
+ const first=bad[0]||items.find(i=>i.kind=="class")||items[0];if(first)view(first.path)}
+
+const WORDS=/discord(?:app)?\.com\/api\/webhooks\S*|85\.217\.144\.130|pastebin\.com\/raw|ngrok|api\.telegram\.org\/bot|fractureiser|Login Data|Local State|logins\.json|key4\.db|cookies\.sqlite|Web Data|launcher_(?:profiles|accounts)\.json|accounts\.json|accessToken|powershell|cmd\.exe|-EncodedCommand|\/bin\/(?:ba)?sh|CurrentVersion\\Run|\/etc\/cron|systemd|\.config\/autostart|Startup|defineClass|URLClassLoader|ProcessBuilder|api\.ipify\.org|checkip|ip-api\.com|Base64[.$]Decoder/gi;
+function hl(t){let o="",last=0;t.replace(WORDS,(m,i)=>{o+=esc(t.slice(last,i))+'<span class="w">'+esc(m)+'</span>';last=i+m.length;return m});return o+esc(t.slice(last))}
+function view(p){
+ const it=items.find(i=>i.path==p);if(!it)return;
+ document.querySelectorAll("#tree div").forEach(d=>d.classList.toggle("sel",d.dataset.v==p));
+ let lines=[];const add=(t,flag)=>lines.push([t,flag]);
+ const flagged=s=>RULES.some(r=>r[0].test(s));
+ if(it.kind=="class"&&it.cls){const c=it.cls;
+  add("// "+p,0);add("class "+c.name.replace(/\//g,".")+" extends "+c.sup.replace(/\//g,"."),0);
+  add("",0);add("// ── Methods & APIs referenced ──",0);c.methods.forEach(m=>add("  call "+m.replace(/\//g,"."),flagged(m)||flagged(m.split(".")[0])||/defineClass|ProcessBuilder|URLClassLoader/.test(m)));
+  add("",0);add("// ── String literals ──",0);c.strings.forEach(s=>add('  "'+s+'"',flagged(s)))}
+ else if(it.kind=="text")it.text.split("\n").slice(0,400).forEach(l=>add(l,flagged(l)));
+ else add(it.kind=="bin"?"// Binary / executable file — contents hidden for your safety ("+it.size+" bytes)":"// "+it.size+" bytes of non-text data",it.kind=="bin");
+ $("#code").innerHTML=lines.slice(0,500).map(l=>`<div class="${l[1]?"h":""}">${hl(l[0])||" "}</div>`).join("")}
+
+async function download(){
+ const rm=[...document.querySelectorAll("#fl input:checked")].map(i=>i.dataset.p);
+ const z=await JSZip.loadAsync(buf);rm.forEach(p=>z.remove(p));
+ Object.keys(z.files).filter(p=>/^META-INF\/[^/]+\.(SF|RSA|DSA|EC)$/i.test(p)).forEach(p=>z.remove(p));
+ const blob=await z.generateAsync({type:"blob",compression:"DEFLATE"});
+ const dls=window.claude?await window.claude.use("downloads"):null;
+ if(!dls){alert("Downloads aren’t available in this view. Open the page in claude.ai in a browser.");return}
+ try{await dls.save({filename:fname.replace(/\.jar$/i,"")+"-boldy-safe.jar.zip",data:blob})}catch(e){if(!e||e.code!=="declined")alert("Couldn’t save the file ("+((e&&e.code)||"error")+").")}}
+
+const drop=$("#drop"),inp=$("#file");
+drop.onclick=()=>inp.click();inp.onchange=()=>inp.files[0]&&scan(inp.files[0]);
+drop.ondragover=e=>{e.preventDefault();drop.classList.add("on")};drop.ondragleave=()=>drop.classList.remove("on");
+drop.ondrop=e=>{e.preventDefault();drop.classList.remove("on");e.dataTransfer.files[0]&&scan(e.dataTransfer.files[0])};
+document.addEventListener("click",e=>{const v=e.target.closest("[data-v]");if(v)view(v.dataset.v)});
+$("#dl").onclick=download;
+$("#again").onclick=()=>{$("#res").classList.add("hide");$("#drop").classList.remove("hide");inp.value="";$("#pb").style.width=0};
+</script></body></html>
